@@ -1,0 +1,51 @@
+<h1>Pizza Orders</h1>
+<div id="pizza-orders">
+  <div class="wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th class="id">
+            #
+          </th>
+          <th>
+            Size
+          </th>
+          <th>
+            Style
+          </th>
+          <th>
+            Topping 1
+          </th>
+          <th>
+            Topping 2
+          </th>
+          <th>
+            Price
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr :for={order <- @pizza_orders}>
+          <td class="id">
+            <%= order.id %>
+          </td>
+          <td>
+            <%= order.size %>
+          </td>
+          <td>
+            <%= order.style %>
+          </td>
+          <td>
+            <%= order.topping_1 %>
+          </td>
+          <td>
+            <%= order.topping_2 %>
+          </td>
+          <td class="price">
+            <%= number_to_currency(order.price) %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
