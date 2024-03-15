@@ -44,7 +44,9 @@ defmodule LiveViewStudioWeb.SandboxLive do
         </button>
       </form>
       <div :if={@price} class="quote">
-        Get your personal beach today for only <%= number_to_currency(@price) %>
+        Get your personal beach today for only <%= number_to_currency(
+          @price
+        ) %>
       </div>
     </div>
     """
@@ -61,5 +63,4 @@ defmodule LiveViewStudioWeb.SandboxLive do
     price = Sandbox.calculate_price(socket.assigns.weight)
     {:noreply, assign(socket, price: price)}
   end
-
 end

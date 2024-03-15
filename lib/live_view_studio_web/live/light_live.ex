@@ -11,37 +11,48 @@ defmodule LiveViewStudioWeb.LightLive do
     <h1>Front Porch Light</h1>
     <div id="light">
       <div class="meter">
-      <span style={"width: #{@brightness}%; background: #{temp_color(@temperature)}"}>
+        <span style={"width: #{@brightness}%; background: #{temp_color(@temperature)}"}>
           <%= @brightness %>%
         </span>
       </div>
       <button phx-click="off">
-        <img src="/images/light-off.svg">
+        <img src="/images/light-off.svg" />
       </button>
       <button phx-click="on">
-        <img src="/images/light-on.svg">
+        <img src="/images/light-on.svg" />
       </button>
       <button phx-click="down">
-        <img src="/images/down.svg">
+        <img src="/images/down.svg" />
       </button>
       <button phx-click="up">
-        <img src="/images/up.svg">
+        <img src="/images/up.svg" />
       </button>
       <button phx-click="random">
-        <img src="/images/fire.svg">
+        <img src="/images/fire.svg" />
       </button>
     </div>
 
     <form phx-change="update">
-      <input type="range" min="0" max="100"
-            name="brightness" value={@brightness} />
+      <input
+        type="range"
+        min="0"
+        max="100"
+        name="brightness"
+        value={@brightness}
+      />
     </form>
 
     <form phx-change="update-temp">
       <div class="temps">
         <%= for temp <- ["3000", "4000", "5000"] do %>
           <div>
-            <input type="radio" id={temp} name="temp" value={temp} checked={temp == @temperature}/>
+            <input
+              type="radio"
+              id={temp}
+              name="temp"
+              value={temp}
+              checked={temp == @temperature}
+            />
             <label for={temp}><%= temp %></label>
           </div>
         <% end %>
@@ -51,7 +62,7 @@ defmodule LiveViewStudioWeb.LightLive do
   end
 
   def handle_event("random", _, socket) do
-    socket = assign(socket, brightness: Enum.random(0..100) )
+    socket = assign(socket, brightness: Enum.random(0..100))
     {:noreply, socket}
   end
 
