@@ -48,7 +48,7 @@ defmodule LiveViewStudioWeb.SalesLive do
   end
 
   def handle_event("refresh", _value, socket) do
-    {:noreply,assign_stats(socket)}
+    {:noreply, assign_stats(socket)}
   end
 
   def handle_info(:tick, socket) do
