@@ -5,6 +5,7 @@ defmodule LiveViewStudio.Airports do
     Map.filter(list_airports(), fn {code, _} ->
       String.starts_with?(code, String.upcase(prefix))
     end)
+    |> Enum.take(3)
   end
 
   def list_airports do
