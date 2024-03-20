@@ -10,14 +10,15 @@ defmodule LiveViewStudioWeb.BoatsLive do
         boats: Boats.list_boats()
       )
 
-    {:ok, socket}
+    # temporary_assigns to avoid the boats assign to be persisted on the socket
+    {:ok, socket, temporary_assigns: [boats: []]}
   end
 
   def render(assigns) do
     ~H"""
     <h1>Daily Boat Rentals</h1>
     <div id="boats">
-      <form>
+      <form phx-change="filter">
         <div class="filters">
           <select name="type">
             <%= Phoenix.HTML.Form.options_for_select(
@@ -60,6 +61,18 @@ defmodule LiveViewStudioWeb.BoatsLive do
       </div>
     </div>
     """
+  end
+
+  def handle_event("filter", %{"type" => type, "prices" => prices}, socket) do
+    boats = Boats.list_boats(%{type: type, prices: prices})
+
+    # Just to show de difference between the assigned and filtered boats
+    # when using temporary_assigns on mount. To see the difference, remove
+    # the temporary_assigns from the mount
+    IO.inspect(length(socket.assigns.boats), label: "Assigned boats")
+    IO.inspect(length(boats), label: "Filtered boats")
+
+    {:noreply, assign(socket, boats: boats, filter: %{type: type, prices: prices})}
   end
 
   defp type_options do
