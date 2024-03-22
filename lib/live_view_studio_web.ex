@@ -90,6 +90,9 @@ defmodule LiveViewStudioWeb do
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
+      # Custom Components
+      import LiveViewStudioWeb.CustomComponents
+
       # Routes generation with the ~p sigil
       unquote(verified_routes())
     end

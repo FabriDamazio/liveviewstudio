@@ -17,8 +17,32 @@ defmodule LiveViewStudioWeb.BoatsLive do
   def render(assigns) do
     ~H"""
     <h1>Daily Boat Rentals</h1>
+    <.promo expiration={2}>
+      Save 25% on rentals!
+      <:legal>
+        <Heroicons.exclamation_circle />
+        Limit 1 per party.
+      </:legal>
+    </.promo>
     <div id="boats">
-      <form phx-change="filter">
+      <.filter_form filter={@filter} />
+      <.boats_list boats={@boats} />
+      <.promo expiration={1}>
+        Hurry! Only 3 boats left!
+        <:legal>
+          <Heroicons.exclamation_circle />
+          Excluding weekends.
+        </:legal>
+      </.promo>
+    </div>
+    """
+  end
+
+  attr :filter, :map, required: true
+
+  def filter_form(assigns) do
+    ~H"""
+    <form phx-change="filter">
         <div class="filters">
           <select name="type">
             <%= Phoenix.HTML.Form.options_for_select(
@@ -41,7 +65,12 @@ defmodule LiveViewStudioWeb.BoatsLive do
           </div>
         </div>
       </form>
-      <div class="boats">
+    """
+  end
+
+  def boats_list(assigns) do
+    ~H"""
+    <div class="boats">
         <div :for={boat <- @boats} class="boat">
           <img src={boat.image} />
           <div class="content">
@@ -59,7 +88,6 @@ defmodule LiveViewStudioWeb.BoatsLive do
           </div>
         </div>
       </div>
-    </div>
     """
   end
 
