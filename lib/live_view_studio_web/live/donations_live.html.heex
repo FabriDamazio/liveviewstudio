@@ -5,13 +5,19 @@
       <thead>
         <tr>
           <th class="item">
-            Item
+            <.sort_link sort_by={:item} options={@options}>
+              Item
+            </.sort_link>
           </th>
           <th>
-            Quantity
+            <.sort_link sort_by={:quantity} options={@options}>
+              Quantity
+            </.sort_link>
           </th>
           <th>
-            Days Until Expires
+            <.sort_link sort_by={:days_until_expires} options={@options}>
+              Days Until Expires
+            </.sort_link>
           </th>
         </tr>
       </thead>
