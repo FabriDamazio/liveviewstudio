@@ -5,22 +5,34 @@
       <thead>
         <tr>
           <th class="id">
-            #
+            <.sort_link sort_by={:id} options={@options}>
+              #
+            </.sort_link>
           </th>
           <th>
-            Size
+            <.sort_link sort_by={:size} options={@options}>
+              Size
+            </.sort_link>
           </th>
           <th>
-            Style
+            <.sort_link sort_by={:style} options={@options}>
+              Style
+            </.sort_link>
           </th>
           <th>
-            Topping 1
+            <.sort_link sort_by={:topping_1} options={@options}>
+              Topping 1
+            </.sort_link>
           </th>
           <th>
-            Topping 2
+            <.sort_link sort_by={:topping_2} options={@options}>
+              Topping 2
+            </.sort_link>
           </th>
           <th>
-            Price
+            <.sort_link sort_by={:price} options={@options}>
+              Price
+            </.sort_link>
           </th>
         </tr>
       </thead>
@@ -47,5 +59,32 @@
         </tr>
       </tbody>
     </table>
+    <div class="float-left">
+      Per page:
+      <form phx-change="pagination">
+        <select name="selected">
+          <%= Phoenix.HTML.Form.options_for_select(
+            ["5", "10", "25", "50", "100"],
+            @options.per_page
+          ) %>
+        </select>
+      </form>
+    </div>
+    <div class="float-right">
+      <.link
+        :if={@options.page > 1}
+        patch={
+          ~p"/pizza-orders?#{%{per_page: @options.per_page, page: @options.page - 1, sort_by: @options.sort_by, sort_order: @options.sort_order}}"
+        }
+      >
+        Previous
+      </.link>
+      <%= @options.page %>
+      <.link patch={
+        ~p"/pizza-orders?#{%{per_page: @options.per_page, page: @options.page + 1, sort_by: @options.sort_by, sort_order: @options.sort_order}}"
+      }>
+        Next
+      </.link>
+    </div>
   </div>
 </div>
