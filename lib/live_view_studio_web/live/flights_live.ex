@@ -37,14 +37,13 @@ defmodule LiveViewStudioWeb.FlightsLive do
         </button>
 
         <datalist id="matches">
-          <option :for={{code, name} <- @matches} value={code} >
+          <option :for={{code, name} <- @matches} value={code}>
             <%= name %>
           </option>
         </datalist>
-
       </form>
 
-      <.loading_indicator visible={@loading}/>
+      <.loading_indicator visible={@loading} />
 
       <div class="flights">
         <ul>

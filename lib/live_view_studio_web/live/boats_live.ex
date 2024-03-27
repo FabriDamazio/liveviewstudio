@@ -20,8 +20,7 @@ defmodule LiveViewStudioWeb.BoatsLive do
     <.promo expiration={2}>
       Save 25% on rentals!
       <:legal>
-        <Heroicons.exclamation_circle />
-        Limit 1 per party.
+        <Heroicons.exclamation_circle /> Limit 1 per party.
       </:legal>
     </.promo>
     <div id="boats">
@@ -30,8 +29,7 @@ defmodule LiveViewStudioWeb.BoatsLive do
       <.promo expiration={1}>
         Hurry! Only 3 boats left!
         <:legal>
-          <Heroicons.exclamation_circle />
-          Excluding weekends.
+          <Heroicons.exclamation_circle /> Excluding weekends.
         </:legal>
       </.promo>
     </div>
@@ -43,51 +41,51 @@ defmodule LiveViewStudioWeb.BoatsLive do
   def filter_form(assigns) do
     ~H"""
     <form phx-change="filter">
-        <div class="filters">
-          <select name="type">
-            <%= Phoenix.HTML.Form.options_for_select(
-              type_options(),
-              @filter.type
-            ) %>
-          </select>
-          <div class="prices">
-            <%= for price <- ["$", "$$", "$$$"] do %>
-              <input
-                type="checkbox"
-                name="prices[]"
-                value={price}
-                id={price}
-                checked={price in @filter.prices}
-              />
-              <label for={price}><%= price %></label>
-            <% end %>
-            <input type="hidden" name="prices[]" value="" />
-          </div>
+      <div class="filters">
+        <select name="type">
+          <%= Phoenix.HTML.Form.options_for_select(
+            type_options(),
+            @filter.type
+          ) %>
+        </select>
+        <div class="prices">
+          <%= for price <- ["$", "$$", "$$$"] do %>
+            <input
+              type="checkbox"
+              name="prices[]"
+              value={price}
+              id={price}
+              checked={price in @filter.prices}
+            />
+            <label for={price}><%= price %></label>
+          <% end %>
+          <input type="hidden" name="prices[]" value="" />
         </div>
-      </form>
+      </div>
+    </form>
     """
   end
 
   def boats_list(assigns) do
     ~H"""
     <div class="boats">
-        <div :for={boat <- @boats} class="boat">
-          <img src={boat.image} />
-          <div class="content">
-            <div class="model">
-              <%= boat.model %>
-            </div>
-            <div class="details">
-              <span class="price">
-                <%= boat.price %>
-              </span>
-              <span class="type">
-                <%= boat.type %>
-              </span>
-            </div>
+      <div :for={boat <- @boats} class="boat">
+        <img src={boat.image} />
+        <div class="content">
+          <div class="model">
+            <%= boat.model %>
+          </div>
+          <div class="details">
+            <span class="price">
+              <%= boat.price %>
+            </span>
+            <span class="type">
+              <%= boat.type %>
+            </span>
           </div>
         </div>
       </div>
+    </div>
     """
   end
 

@@ -18,10 +18,11 @@ defmodule LiveViewStudioWeb.ServersLive do
   def handle_params(%{"id" => id}, _uri, socket) do
     server = Servers.get_server!(id)
 
-    {:noreply, assign(socket,
-      selected_server: server,
-      page_title: "Server: #{server.name}"
-    )}
+    {:noreply,
+     assign(socket,
+       selected_server: server,
+       page_title: "Server: #{server.name}"
+     )}
   end
 
   def handle_params(_params, _uri, socket) do

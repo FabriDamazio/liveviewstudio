@@ -45,21 +45,21 @@ defmodule LiveViewStudioWeb.AthletesLive do
   def filter_form(assigns) do
     ~H"""
     <form phx-change="filter">
-        <div class="filters">
-          <select name="sport">
-            <%= Phoenix.HTML.Form.options_for_select(
-              sport_options(),
-              @filter.sport
-            ) %>
-          </select>
-          <select name="status">
-            <%= Phoenix.HTML.Form.options_for_select(
-              status_options(),
-              @filter.status
-            ) %>
-          </select>
-        </div>
-      </form>
+      <div class="filters">
+        <select name="sport">
+          <%= Phoenix.HTML.Form.options_for_select(
+            sport_options(),
+            @filter.sport
+          ) %>
+        </select>
+        <select name="status">
+          <%= Phoenix.HTML.Form.options_for_select(
+            status_options(),
+            @filter.status
+          ) %>
+        </select>
+      </div>
+    </form>
     """
   end
 

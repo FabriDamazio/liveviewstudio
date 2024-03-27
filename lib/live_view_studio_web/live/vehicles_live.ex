@@ -41,7 +41,7 @@ defmodule LiveViewStudioWeb.VehiclesLive do
         </datalist>
       </form>
 
-      <.loading_indicator visible={@loading}/>
+      <.loading_indicator visible={@loading} />
 
       <div class="vehicles">
         <ul>
