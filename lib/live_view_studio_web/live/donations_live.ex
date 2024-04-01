@@ -30,14 +30,16 @@ defmodule LiveViewStudioWeb.DonationsLive do
   slot :inner_block, required: true
 
   def sort_link(assigns) do
-    params = %{assigns.options | sort_by: assigns.sort_by, sort_order: next_sort_order(assigns.options.sort_order)}
+    params = %{
+      assigns.options
+      | sort_by: assigns.sort_by,
+        sort_order: next_sort_order(assigns.options.sort_order)
+    }
+
     assigns = assign(assigns, params: params)
 
-
     ~H"""
-    <.link patch={
-      ~p"/donations?#{params}"
-    }>
+    <.link patch={~p"/donations?#{params}"}>
       <%= render_slot(@inner_block) %>
       <%= sort_indicator(@sort_by, @options) %>
     </.link>
@@ -97,9 +99,11 @@ defmodule LiveViewStudioWeb.DonationsLive do
       {page, _} when page > 0 ->
         page
 
-      :error -> 1
+      :error ->
+        1
 
-      _ -> 1
+      _ ->
+        1
     end
   end
 
@@ -110,9 +114,11 @@ defmodule LiveViewStudioWeb.DonationsLive do
       {per_page, _} when per_page > 0 ->
         per_page
 
-      :error -> 5
+      :error ->
+        5
 
-      _ -> 5
+      _ ->
+        5
     end
   end
 

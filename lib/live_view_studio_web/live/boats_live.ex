@@ -23,10 +23,10 @@ defmodule LiveViewStudioWeb.BoatsLive do
     boats = Boats.list_boats(filter)
 
     {:noreply,
-      assign(socket,
-        filter: filter,
-        boats: boats
-      )}
+     assign(socket,
+       filter: filter,
+       boats: boats
+     )}
   end
 
   def render(assigns) do
