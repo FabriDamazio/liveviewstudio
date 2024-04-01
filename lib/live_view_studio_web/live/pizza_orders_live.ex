@@ -26,10 +26,7 @@ defmodule LiveViewStudioWeb.PizzaOrdersLive do
   def handle_event("pagination", %{"selected" => selected}, socket) do
     options = socket.assigns.options
     selected = String.to_integer(selected)
-    IO.inspect(selected)
     socket = assign(socket, per_page: selected)
-
-    IO.inspect(socket)
 
     {:noreply,
      redirect(socket,

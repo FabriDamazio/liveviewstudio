@@ -14,6 +14,21 @@ defmodule LiveViewStudioWeb.BoatsLive do
     {:ok, socket, temporary_assigns: [boats: []]}
   end
 
+  def handle_params(params, _uri, socket) do
+    filter = %{
+      type: params["type"] || "",
+      prices: params["prices"] || [""]
+    }
+
+    boats = Boats.list_boats(filter)
+
+    {:noreply,
+      assign(socket,
+        filter: filter,
+        boats: boats
+      )}
+  end
+
   def render(assigns) do
     ~H"""
     <h1>Daily Boat Rentals</h1>
@@ -90,15 +105,9 @@ defmodule LiveViewStudioWeb.BoatsLive do
   end
 
   def handle_event("filter", %{"type" => type, "prices" => prices}, socket) do
-    boats = Boats.list_boats(%{type: type, prices: prices})
+    params = %{type: type, prices: prices}
 
-    # Just to show de difference between the assigned and filtered boats
-    # when using temporary_assigns on mount. To see the difference, remove
-    # the temporary_assigns from the mount
-    IO.inspect(length(socket.assigns.boats), label: "Assigned boats")
-    IO.inspect(length(boats), label: "Filtered boats")
-
-    {:noreply, assign(socket, boats: boats, filter: %{type: type, prices: prices})}
+    {:noreply, push_patch(socket, to: ~p"/boats?#{params}")}
   end
 
   defp type_options do

@@ -10,14 +10,18 @@ defmodule LiveViewStudioWeb.DonationsLive do
   def handle_params(params, _uri, socket) do
     sort_by = valid_sort_by(params)
     sort_order = valid_sort_order(params)
+    page = valid_page(params)
+    per_page = valid_per_page(params)
+    donation_count = Donations.count_donations()
 
-    options = %{sort_by: sort_by, sort_order: sort_order}
+    options = %{sort_by: sort_by, sort_order: sort_order, page: page, per_page: per_page}
     donations = Donations.list_donations(options)
 
     {:noreply,
      assign(socket,
        donations: donations,
-       options: options
+       options: options,
+       donation_count: donation_count
      )}
   end
 
@@ -26,14 +30,40 @@ defmodule LiveViewStudioWeb.DonationsLive do
   slot :inner_block, required: true
 
   def sort_link(assigns) do
+    params = %{assigns.options | sort_by: assigns.sort_by, sort_order: next_sort_order(assigns.options.sort_order)}
+    assigns = assign(assigns, params: params)
+
+
     ~H"""
     <.link patch={
-      ~p"/donations?#{%{sort_by: @sort_by, sort_order: next_sort_order(@options.sort_order)}}"
+      ~p"/donations?#{params}"
     }>
       <%= render_slot(@inner_block) %>
       <%= sort_indicator(@sort_by, @options) %>
     </.link>
     """
+  end
+
+  def handle_event("select-per-page", %{"per-page" => per_page}, socket) do
+    params = %{socket.assigns.options | per_page: per_page}
+    socket = push_patch(socket, to: ~p"/donations?#{params}")
+    {:noreply, socket}
+  end
+
+  defp more_pages?(options, donation_count) do
+    options.page * options.per_page < donation_count
+  end
+
+  defp pages(options, donation_count) do
+    page_count = ceil(donation_count / options.per_page)
+
+    for page_number <- (options.page - 2)..(options.page + 2),
+        page_number > 0 do
+      if page_number <= page_count do
+        current_page? = page_number == options.page
+        {page_number, current_page?}
+      end
+    end
   end
 
   defp next_sort_order(:asc), do: :desc
@@ -61,4 +91,30 @@ defmodule LiveViewStudioWeb.DonationsLive do
   end
 
   defp valid_sort_order(_params), do: :asc
+
+  def valid_page(%{"page" => page}) do
+    case page |> Integer.parse() do
+      {page, _} when page > 0 ->
+        page
+
+      :error -> 1
+
+      _ -> 1
+    end
+  end
+
+  def valid_page(_params), do: 1
+
+  def valid_per_page(%{"per_page" => per_page}) do
+    case per_page |> Integer.parse() do
+      {per_page, _} when per_page > 0 ->
+        per_page
+
+      :error -> 5
+
+      _ -> 5
+    end
+  end
+
+  def valid_per_page(_params), do: 1
 end
