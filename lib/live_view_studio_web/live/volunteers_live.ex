@@ -51,12 +51,20 @@ defmodule LiveViewStudioWeb.VolunteersLive do
             <%= volunteer.phone %>
           </div>
           <div class="status">
-            <button>
+            <button phx-click="toggle-status" phx-value-id={volunteer.id}>
               <%= if volunteer.checked_out,
                 do: "Check In",
                 else: "Check Out" %>
             </button>
           </div>
+          <.link
+            class="delete"
+            phx-click="delete"
+            phx-value-id={volunteer.id}
+            data-confirm="Are you sure?"
+          >
+            <.icon name="hero-trash-solid" />
+          </.link>
         </div>
       </div>
     </div>
@@ -64,8 +72,6 @@ defmodule LiveViewStudioWeb.VolunteersLive do
   end
 
   def handle_event("validate", %{"volunteer" => volunteer_params}, socket) do
-    IO.inspect(socket.assigns.streams.volunteers, label: "validate")
-
     changeset =
       %Volunteer{}
       |> Volunteer.changeset(volunteer_params)
@@ -82,13 +88,25 @@ defmodule LiveViewStudioWeb.VolunteersLive do
           |> stream_insert(:volunteers, volunteer, at: 0)
           |> put_flash(:info, "Volunteer checked in.")
 
-        IO.inspect(socket.assigns.streams.volunteers, label: "save")
-
         changeset = Volunteers.change_volunteer(%Volunteer{})
         {:noreply, assign(socket, form: to_form(changeset))}
 
       {:error, changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
+  end
+
+  def handle_event("toggle-status", %{"id" => id}, socket) do
+    volunteer = Volunteers.get_volunteer!(id)
+    {:ok, volunteer} = Volunteers.toggle_status_volunteer(volunteer)
+
+    {:noreply, stream_insert(socket, :volunteers, volunteer)}
+  end
+
+  def handle_event("delete", %{"id" => id}, socket) do
+    volunteer = Volunteers.get_volunteer!(id)
+    {:ok, _} = Volunteers.delete_volunteer(volunteer)
+
+    {:noreply, stream_delete(socket, :volunteers, volunteer)}
   end
 end
