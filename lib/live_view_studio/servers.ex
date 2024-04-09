@@ -8,6 +8,9 @@ defmodule LiveViewStudio.Servers do
 
   alias LiveViewStudio.Servers.Server
 
+  @pubsub LiveViewStudio.PubSub
+  @topic inspect(__MODULE__)
+
   @doc """
   Returns the list of servers.
 
@@ -53,6 +56,7 @@ defmodule LiveViewStudio.Servers do
     %Server{}
     |> Server.changeset(attrs)
     |> Repo.insert()
+    |> broadcast(:server_created)
   end
 
   @doc """
@@ -71,6 +75,7 @@ defmodule LiveViewStudio.Servers do
     server
     |> Server.changeset(attrs)
     |> Repo.update()
+    |> broadcast(:server_updated)
   end
 
   @doc """
@@ -101,4 +106,15 @@ defmodule LiveViewStudio.Servers do
   def change_server(%Server{} = server, attrs \\ %{}) do
     Server.changeset(server, attrs)
   end
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(@pubsub, @topic)
+  end
+
+  def broadcast({:ok, server}, tag) do
+    Phoenix.PubSub.broadcast(@pubsub, @topic, {tag, server})
+    {:ok, server}
+  end
+
+  def broadcast({:error, _changeset} = error, tag), do: error
 end
