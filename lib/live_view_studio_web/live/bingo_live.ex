@@ -1,15 +1,31 @@
 defmodule LiveViewStudioWeb.BingoLive do
   use LiveViewStudioWeb, :live_view
+  alias LiveViewStudioWeb.Presence
+
+  @topic "users:bingo"
 
   on_mount {LiveViewStudioWeb.UserAuth, :ensure_authenticated}
 
   def mount(_params, _session, socket) do
-    if connected?(socket), do: :timer.send_interval(3000, self(), :pick)
+    %{current_user: current_user} = socket.assigns
+
+    if connected?(socket) do
+      :timer.send_interval(3000, self(), :pick)
+
+      Phoenix.PubSub.subscribe(LiveViewStudio.PubSub, @topic)
+
+      {:ok, _} =
+        Presence.track(self(), @topic, current_user.id, %{
+          username: current_user.email |> String.split("@") |> hd(),
+          time: Timex.now() |> Timex.format!("%H:%M", :strftime)
+        })
+    end
 
     socket =
       assign(socket,
         number: nil,
-        numbers: all_numbers()
+        numbers: all_numbers(),
+        presences: Presence.list_users(@topic)
       )
 
     {:ok, socket}
@@ -18,17 +34,26 @@ defmodule LiveViewStudioWeb.BingoLive do
   def render(assigns) do
     ~H"""
     <h1>Bingo Boss 📢</h1>
-    Current user id: <%= @current_user.id %>
     <div id="bingo">
-      <div class="number">
-        <%= @number %>
+      <div class="users">
+        <ul>
+          <li :for={{_user_id, presence} <- @presences}>
+            <span class="username">
+              <%= presence.username %>
+            </span>
+            <span class="timestamp">
+              <%= presence.time %>
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div id="bingo">
+        <div class="number">
+          <%= @number %>
+        </div>
       </div>
     </div>
     """
-  end
-
-  def handle_info(:pick, socket) do
-    {:noreply, pick(socket)}
   end
 
   # Assigns the next random bingo number, removing it
@@ -54,5 +79,20 @@ defmodule LiveViewStudioWeb.BingoLive do
       Enum.map(numbers, &"#{letter} #{&1}")
     end)
     |> Enum.shuffle()
+  end
+
+  def handle_info(:pick, socket) do
+    {:noreply, pick(socket)}
+  end
+
+  def handle_info(%{event: "presence_diff", payload: diff}, socket) do
+    socket =
+      assign(
+        socket,
+        :presences,
+        Presence.update_presences(socket.assigns.presences, diff.leaves, diff.joins)
+      )
+
+    {:noreply, socket}
   end
 end
