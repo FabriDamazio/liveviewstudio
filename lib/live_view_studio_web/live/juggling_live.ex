@@ -19,7 +19,7 @@ defmodule LiveViewStudioWeb.JugglingLive do
   def render(assigns) do
     ~H"""
     <h1>Juggling Key Events</h1>
-    <div id="juggling">
+    <div id="juggling" phx-window-keyup="update">
       <div class="legend">
         k = play/pause, &larr; = previous, &rarr; = next
       </div>
@@ -31,7 +31,12 @@ defmodule LiveViewStudioWeb.JugglingLive do
           <%= Enum.at(@images, @current) %>
         </div>
 
-        <input type="number" value={@current} />
+        <input
+          type="number"
+          value={@current}
+          phx-keyup="set-current"
+          phx-key="Enter"
+        />
 
         <button phx-click="toggle-playing">
           <%= if @is_playing, do: "Pause", else: "Play" %>
@@ -39,6 +44,26 @@ defmodule LiveViewStudioWeb.JugglingLive do
       </div>
     </div>
     """
+  end
+
+  def handle_event("set-current", %{"key" => "Enter", "value" => value}, socket) do
+    {:noreply, assign(socket, :current, String.to_integer(value))}
+  end
+
+  def handle_event("update", %{"key" => "k"}, socket) do
+    {:noreply, toggle_playing(socket)}
+  end
+
+  def handle_event("update", %{"key" => "ArrowRight"}, socket) do
+    {:noreply, assign(socket, :current, next(socket))}
+  end
+
+  def handle_event("update", %{"key" => "ArrowLeft"}, socket) do
+    {:noreply, assign(socket, :current, previous(socket))}
+  end
+
+  def handle_event("update", _, socket) do
+    {:noreply, socket}
   end
 
   def handle_event("toggle-playing", _, socket) do

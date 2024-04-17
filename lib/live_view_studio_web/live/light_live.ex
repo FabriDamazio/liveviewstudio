@@ -9,7 +9,7 @@ defmodule LiveViewStudioWeb.LightLive do
   def render(assigns) do
     ~H"""
     <h1>Front Porch Light</h1>
-    <div id="light">
+    <div id="light" phx-window-keyup="update">
       <div class="meter">
         <span style={"width: #{@brightness}%; background: #{temp_color(@temperature)}"}>
           <%= @brightness %>%
@@ -61,6 +61,26 @@ defmodule LiveViewStudioWeb.LightLive do
     """
   end
 
+  def handle_event("update", %{"key" => "ArrowRight"}, socket) do
+    {:noreply, brightness_up(socket)}
+  end
+
+  def handle_event("update", %{"key" => "ArrowLeft"}, socket) do
+    {:noreply, brightness_down(socket)}
+  end
+
+  def handle_event("update", %{"key" => "ArrowUp"}, socket) do
+    {:noreply, brightness_up(socket)}
+  end
+
+  def handle_event("update", %{"key" => "ArrowDown"}, socket) do
+    {:noreply, brightness_down(socket)}
+  end
+
+  def handle_event("update", _, socket) do
+    {:noreply, socket}
+  end
+
   def handle_event("random", _, socket) do
     socket = assign(socket, brightness: Enum.random(0..100))
     {:noreply, socket}
@@ -94,6 +114,14 @@ defmodule LiveViewStudioWeb.LightLive do
   def handle_event("update-temp", params, socket) do
     socket = assign(socket, temperature: params["temp"])
     {:noreply, socket}
+  end
+
+  defp brightness_up(socket) do
+    update(socket, :brightness, &min(&1 + 10, 100))
+  end
+
+  defp brightness_down(socket) do
+    update(socket, :brightness, &max(&1 - 10, 0))
   end
 
   defp temp_color("3000"), do: "#F1C40D"

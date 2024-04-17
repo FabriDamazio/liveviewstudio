@@ -1,5 +1,5 @@
 <h1>Food Bank Donations</h1>
-<div id="donations">
+<div id="donations" phx-window-keyup="paginate" phx-throttle="200">
   <form phx-change="select-per-page">
     <select name="per-page">
       <%= Phoenix.HTML.Form.options_for_select(
