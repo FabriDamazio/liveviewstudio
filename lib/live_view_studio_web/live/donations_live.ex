@@ -46,11 +46,29 @@ defmodule LiveViewStudioWeb.DonationsLive do
     """
   end
 
+  def handle_event("paginate", %{"key" => "ArrowLeft"}, socket) do
+    {:noreply, goto_page(socket, socket.assigns.options.page - 1)}
+  end
+
+  def handle_event("paginate", %{"key" => "ArrowRight"}, socket) do
+    {:noreply, goto_page(socket, socket.assigns.options.page + 1)}
+  end
+
+  def handle_event("paginate", _, socket), do: {:noreply, socket}
+
   def handle_event("select-per-page", %{"per-page" => per_page}, socket) do
     params = %{socket.assigns.options | per_page: per_page}
     socket = push_patch(socket, to: ~p"/donations?#{params}")
     {:noreply, socket}
   end
+
+  defp goto_page(socket, page) when page > 0 do
+    params = %{socket.assigns.options | page: page}
+
+    push_patch(socket, to: ~p"/donations?#{params}")
+  end
+
+  defp goto_page(socket, _page), do: socket
 
   defp more_pages?(options, donation_count) do
     options.page * options.per_page < donation_count
@@ -123,22 +141,4 @@ defmodule LiveViewStudioWeb.DonationsLive do
   end
 
   def valid_per_page(_params), do: 5
-
-  def handle_event("paginate", %{"key" => "ArrowLeft"}, socket) do
-    {:noreply, goto_page(socket, socket.assigns.options.page - 1)}
-  end
-
-  def handle_event("paginate", %{"key" => "ArrowRight"}, socket) do
-    {:noreply, goto_page(socket, socket.assigns.options.page + 1)}
-  end
-
-  def handle_event("paginate", _, socket), do: {:noreply, socket}
-
-  defp goto_page(socket, page) when page > 0 do
-    params = %{socket.assigns.options | page: page}
-
-    push_patch(socket, to: ~p"/donations?#{params}")
-  end
-
-  defp goto_page(socket, _page), do: socket
 end
