@@ -8,11 +8,20 @@ defmodule LiveViewStudioWeb.DesksLive do
     if connected?(socket), do: Desks.subscribe()
 
     socket =
-      assign(socket,
-        form: to_form(Desks.change_desk(%Desk{}))
+      socket
+      |> assign(form: to_form(Desks.change_desk(%Desk{})))
+      |> allow_upload(
+        :photos,
+        accept: ~w(.png .jpeg .jpg),
+        max_entries: 3,
+        max_file_size: 10_000_000
       )
 
     {:ok, stream(socket, :desks, Desks.list_desks())}
+  end
+
+  def handle_event("cancel", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :photos, ref)}
   end
 
   def handle_event("validate", %{"desk" => params}, socket) do
@@ -42,4 +51,13 @@ defmodule LiveViewStudioWeb.DesksLive do
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
   end
+
+  defp error_to_string(:too_large),
+    do: "Gulp! File too large (max 10 MB)."
+
+  defp error_to_string(:too_many_files),
+    do: "Whoa, too many files."
+
+  defp error_to_string(:not_accepted),
+    do: "Sorry, that's not an acceptable file type."
 end
