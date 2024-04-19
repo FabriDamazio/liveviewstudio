@@ -34,6 +34,27 @@ defmodule LiveViewStudioWeb.DesksLive do
   end
 
   def handle_event("save", %{"desk" => params}, socket) do
+    photo_locations =
+      consume_uploaded_entries(socket, :photos, fn meta, entry ->
+        dest =
+          Path.join([
+            "priv",
+            "static",
+            "uploads",
+            "#{entry.uuid}-#{entry.client_name}"
+          ])
+
+        IO.inspect(meta.path)
+
+        File.cp!(meta.path, dest)
+
+        url_path = static_path(socket, "/uploads/#{Path.basename(dest)}")
+
+        {:ok, url_path}
+      end)
+
+    params = Map.put(params, "photo_locations", photo_locations)
+
     case Desks.create_desk(params) do
       {:ok, _desk} ->
         changeset = Desks.change_desk(%Desk{})
